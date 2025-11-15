@@ -1,0 +1,21 @@
+# Jekyll Configuration
+title: Front Page
+description: A simple single-page website
+url: ""
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+theme: minima
+
+# Exclude files from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .nix-*
+  - flake.nix
+  - flake.lock
+  - result
+  - README.md
