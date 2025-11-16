@@ -2,13 +2,17 @@
 layout: default
 ---
 
-<div class="hero min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto text-center text-white">
-                <h1 class="display-1 fw-bold mb-4">Hello World</h1>
-                <p class="lead mb-5 fs-4">Welcome to this single-page website built with Jekyll and Bootstrap.</p>
-                <a href="#" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg">Get Started</a>
+<div class="container col-xxl-8 px-4 py-5">
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=700&h=500&fit=crop" class="d-block mx-lg-auto img-fluid rounded-3 shadow-lg" alt="Hero Image" loading="lazy">
+        </div>
+        <div class="col-lg-6">
+            <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">Hello World</h1>
+            <p class="lead">Welcome to this single-page website built with Jekyll and Bootstrap.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Get Started</button>
+                <button type="button" class="btn btn-outline-secondary btn-lg px-4">Learn More</button>
             </div>
         </div>
     </div>
