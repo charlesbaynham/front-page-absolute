@@ -1,47 +1,28 @@
 
 services:
-  traefik:
-    image: traefik:latest
-    container_name: traefik
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@houseabsolute.co.uk}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"  # Traefik dashboard
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./letsencrypt:/letsencrypt
-    networks:
-      - traefik-network
-    restart: unless-stopped
-
   hello-world:
     image: nginx:alpine
     container_name: hello-world
     volumes:
       - ./html:/usr/share/nginx/html:ro
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.hello-world.rule=Host(`www.houseabsolute.co.uk`) || Host(`houseabsolute.co.uk`)"
-      - "traefik.http.routers.hello-world.entrypoints=web,websecure"
-      - "traefik.http.routers.hello-world.tls=true"
-      - "traefik.http.routers.hello-world.tls.certresolver=letsencrypt"
-      - "traefik.http.services.hello-world.loadbalancer.server.port=80"
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.hello-world.rule: 'Host(`${TRAFIK_HOST}`)'
+      traefik.http.routers.hello-world.entrypoints: https
+      traefik.http.routers.hello-world.tls.certresolver: letsencrypt
+
+      # HTTP redirection
+      traefik.http.routers.hello-world-http.entrypoints: http
+      traefik.http.routers.hello-world-http.rule: 'Host(`${TRAFIK_HOST}`)'
+      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
+      traefik.http.routers.hello-world-http.middlewares: https-redirect
+
     networks:
-      - traefik-network
+      - default
+      - traefik
     restart: unless-stopped
 
 networks:
-  traefik-network:
-    driver: bridge
+  traefik:
+    external: true
