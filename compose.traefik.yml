@@ -6,7 +6,8 @@ services:
     labels:
       traefik.enable: true
       traefik.docker.network: traefik
-      traefik.http.routers.streetfight.rule: Host(`${TRAFIK_HOST}`)
+      traefik.http.routers.front-page-absolute.rule: Host(`${TRAFIK_HOST}`)
+
     # Disable direct access - all access will be via traefik
     ports: !reset []
 
