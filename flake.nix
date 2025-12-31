@@ -1,5 +1,5 @@
 {
-  description = "Jekyll wedding website development environment";
+  description = "A Jekyll-based single-page website with Bootstrap";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -33,7 +33,7 @@
             # Create serve alias
             alias serve='bundle exec jekyll serve'
 
-            echo "Jekyll wedding website development environment"
+            echo "Jekyll website development environment"
             echo ""
             echo "Available commands:"
             echo "  nix run .#default  - Start local development server (alias for bundle exec jekyll serve)"
@@ -58,7 +58,7 @@
 
         # Default package builds the site
         packages.default = pkgs.stdenv.mkDerivation {
-          name = "wedding-site";
+          name = "houseabsolute-site";
           src = ./.;
 
           buildInputs = [ rubyEnv ];
