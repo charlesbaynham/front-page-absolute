@@ -1,5 +1,14 @@
 ---
 layout: default
+projects:
+  - title: Wurwolves
+    description: Play Mafia / Wurwolves with an automated narrator
+    url: https://wurwolves.houseabsolute.co.uk
+    image: img/wurwolves.svg
+  - title: Streetfight
+    description: Roam the streets and hunt your friends
+    url: https://streetfight.houseabsolute.co.uk
+    image: img/streetfight.png
 ---
 
 <div class="page-wrapper">
@@ -13,45 +22,9 @@ layout: default
     </div>
 
     <div class="row g-4 justify-content-center">
-      <div class="col-md-6 col-lg-4">
-        <a
-          href="https://wurwolves.houseabsolute.co.uk"
-          class="text-decoration-none"
-        >
-          <div class="card h-100 project-card">
-            <div class="card-body d-flex flex-column align-items-center">
-              <img
-                src="img/wurwolves.svg"
-                alt="Wurwolves"
-                class="mb-3 project-logo"
-              />
-              <h5 class="card-title">Wurwolves</h5>
-              <p class="card-text">
-                Play Mafia / Wurwolves with an automated narrator
-              </p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="col-md-6 col-lg-4">
-        <a
-          href="https://streetfight.houseabsolute.co.uk"
-          class="text-decoration-none"
-        >
-          <div class="card h-100 project-card">
-            <div class="card-body d-flex flex-column align-items-center">
-              <img
-                src="img/streetfight.png"
-                alt="Streetfight"
-                class="mb-3 project-logo"
-              />
-              <h5 class="card-title">Streetfight</h5>
-              <p class="card-text">Roam the streets and hunt your friends</p>
-            </div>
-          </div>
-        </a>
-      </div>
+      {% for project in page.projects %} {% include project-card.html
+      title=project.title description=project.description url=project.url
+      image=project.image %} {% endfor %}
     </div>
   </div>
 
