@@ -1,5 +1,5 @@
 {
-  description = "Jekyll wedding website development environment";
+  description = "A Jekyll-based single-page website with Bootstrap";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -23,12 +23,12 @@
             echo "Jekyll website development environment"
             echo ""
             echo "Available commands:"
-            echo "  nix run .#serve    - Start local development server"
-            echo "  nix run .#build    - Build static site"
+            echo "  nix run            - Start local development server"
+            echo "  nix build          - Build static site"
             echo "  jekyll serve       - Start local development server"
             echo "  jekyll build       - Build static site"
             echo ""
-            echo "Get started: nix run .#serve"
+            echo "Get started: nix run"
           '';
         };
 
@@ -40,19 +40,11 @@
           '');
         };
 
-        # Build app for building the site
-        apps.build = {
-          type = "app";
-          program = toString (pkgs.writeShellScript "build" ''
-            ${rubyEnv}/bin/jekyll build
-          '');
-        };
-
         apps.default = self.outputs.apps.${system}.serve;
 
         # Default package builds the site
         packages.default = pkgs.stdenv.mkDerivation {
-          name = "jekyll-site";
+          name = "houseabsolute-site";
           src = ./.;
 
           buildInputs = [ rubyEnv ];
