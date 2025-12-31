@@ -23,16 +23,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v25
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Build Jekyll site with Nix
-        run: |
-          nix build
-          cp -r result _site
-
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
@@ -48,7 +38,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=sha,prefix={{branch}}-
+            type=sha
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
