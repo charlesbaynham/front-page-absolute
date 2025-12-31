@@ -6,7 +6,6 @@ baseurl: ""
 
 # Build settings
 markdown: kramdown
-theme: minima
 
 # Exclude files from processing
 exclude:
