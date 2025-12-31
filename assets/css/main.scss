@@ -1,0 +1,28 @@
+---
+---
+
+body {
+    background-color: #252323;
+    color: #fff;
+}
+
+.logo {
+    max-width: 4cm;
+}
+
+.project-logo {
+    max-width: 150px;
+    height: 150px;
+    object-fit: contain;
+}
+
+.project-card {
+    box-shadow:  0 1rem 3rem rgba(243, 241, 241, 0.5);
+    background-color: #111;
+    color: #fff;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
