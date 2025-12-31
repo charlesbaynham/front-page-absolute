@@ -1,0 +1,37 @@
+---
+layout: default
+projects:
+  - title: Wurwolves
+    description: Play Mafia / Wurwolves with an automated narrator
+    url: https://wurwolves.houseabsolute.co.uk
+    image: img/wurwolves.svg
+  - title: Streetfight
+    description: Roam the streets and hunt your friends
+    url: https://streetfight.houseabsolute.co.uk
+    image: img/streetfight.png
+---
+
+<div class="page-wrapper">
+  <div class="container text-center mt-5 flex-grow-1">
+    <div class="mb-5">
+      <img
+        src="img/logo.png"
+        alt="houseabsolute.co.uk"
+        class="img-fluid logo"
+      />
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      {% for project in page.projects %} {% include project-card.html
+      title=project.title description=project.description url=project.url
+      image=project.image %} {% endfor %}
+    </div>
+  </div>
+
+  <footer class="footer mt-auto py-3">
+    <div class="d-flex align-items-center justify-content-center gap-2">
+      <img src="img/bike.png" alt="Baynham Design" class="footer-logo" />
+      <span class="footer-text">Baynham Design</span>
+    </div>
+  </footer>
+</div>

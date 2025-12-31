@@ -10,107 +10,54 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
-        # Ruby environment with Jekyll
-        rubyEnv = pkgs.ruby_3_2.withPackages (ps: with ps; [
-          jekyll
-        ]);
-        
-        # Build the site
-        site = pkgs.stdenv.mkDerivation {
-          name = "front-page-absolute";
-          src = ./.;
-          
-          buildInputs = [ rubyEnv pkgs.bundler ];
-          
-          buildPhase = ''
-            export HOME=$TMPDIR
-            export GEM_HOME=$TMPDIR/.gem
-            export PATH=$GEM_HOME/bin:$PATH
-            
-            # Install dependencies
-            bundle config set --local path 'vendor/bundle'
-            bundle install
-            
-            # Build the site
-            bundle exec jekyll build
+
+        # Ruby environment with Jekyll and theme
+        rubyEnv = pkgs.ruby_3_3.withPackages
+          (ps: with ps; [ jekyll jekyll-sitemap jekyll-theme-minimal webrick ]);
+
+      in {
+        devShells.default = pkgs.mkShell {
+          buildInputs = [ rubyEnv pkgs.git ];
+
+          shellHook = ''
+            echo "Jekyll website development environment"
+            echo ""
+            echo "Available commands:"
+            echo "  nix run            - Start local development server"
+            echo "  nix build          - Build static site"
+            echo "  jekyll serve       - Start local development server"
+            echo "  jekyll build       - Build static site"
+            echo ""
+            echo "Get started: nix run"
           '';
-          
+        };
+
+        # Serve app for running the development server
+        apps.serve = {
+          type = "app";
+          program = toString (pkgs.writeShellScript "serve" ''
+            ${rubyEnv}/bin/jekyll serve
+          '');
+        };
+
+        apps.default = self.outputs.apps.${system}.serve;
+
+        # Default package builds the site
+        packages.default = pkgs.stdenv.mkDerivation {
+          name = "houseabsolute-site";
+          src = ./.;
+
+          buildInputs = [ rubyEnv ];
+
+          buildPhase = ''
+            echo "Building Jekyll site..."
+            ${rubyEnv}/bin/jekyll build
+          '';
+
           installPhase = ''
             mkdir -p $out
             cp -r _site/* $out/
           '';
         };
-        
-      in
-      {
-        packages = {
-          default = site;
-          website = site;
-        };
-        
-        apps = {
-          # Serve the site in development mode
-          serve = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "serve" ''
-              export HOME=$TMPDIR
-              export GEM_HOME=$HOME/.gem
-              export PATH=$GEM_HOME/bin:$PATH
-              
-              cd ${./.}
-              
-              # Install dependencies if needed
-              if [ ! -d "vendor/bundle" ]; then
-                ${pkgs.bundler}/bin/bundle config set --local path 'vendor/bundle'
-                ${pkgs.bundler}/bin/bundle install
-              fi
-              
-              # Serve the site
-              ${pkgs.bundler}/bin/bundle exec ${rubyEnv}/bin/jekyll serve --watch --livereload --host 0.0.0.0
-            '');
-          };
-          
-          # Build the site
-          build = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "build" ''
-              export HOME=$TMPDIR
-              export GEM_HOME=$HOME/.gem
-              export PATH=$GEM_HOME/bin:$PATH
-              
-              cd ${./.}
-              
-              # Install dependencies if needed
-              if [ ! -d "vendor/bundle" ]; then
-                ${pkgs.bundler}/bin/bundle config set --local path 'vendor/bundle'
-                ${pkgs.bundler}/bin/bundle install
-              fi
-              
-              # Build the site
-              ${pkgs.bundler}/bin/bundle exec ${rubyEnv}/bin/jekyll build
-              
-              echo "Site built successfully in _site/"
-            '');
-          };
-        };
-        
-        devShells.default = pkgs.mkShell {
-          buildInputs = [
-            rubyEnv
-            pkgs.bundler
-          ];
-          
-          shellHook = ''
-            export GEM_HOME=$PWD/.gem
-            export PATH=$GEM_HOME/bin:$PATH
-            
-            echo "Jekyll development environment"
-            echo "Commands:"
-            echo "  nix run .#build  - Build the site"
-            echo "  nix run .#serve  - Serve the site with live reload"
-          '';
-        };
-      }
-    );
+      });
 }

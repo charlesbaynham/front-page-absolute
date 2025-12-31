@@ -14,36 +14,22 @@ A single-page website built with Jekyll and Bootstrap, configured for deployment
 
 ### Prerequisites
 
-- [Nix](https://nixos.org/download.html) with flakes enabled, OR
-- Ruby 3.2+ with Bundler
+- [Nix](https://nixos.org/download.html) with flakes enabled
 
-### Using Nix (Recommended)
+### Commands
 
 ```bash
-# Build the site
-nix run .#build
+# Start development server with live reload on http://localhost:4000
+nix run
 
-# Serve the site with live reload on http://localhost:4000
-nix run .#serve
+# Build the static site to ./result
+nix build
 
-# Enter development shell
+# Enter development shell (optional)
 nix develop
 ```
 
-### Using Ruby/Bundler
-
-```bash
-# Install dependencies
-bundle install
-
-# Build the site
-bundle exec jekyll build
-
-# Serve the site with live reload
-bundle exec jekyll serve
-```
-
-The site will be available at `http://localhost:4000`.
+The site will be available at `http://localhost:4000` when running the development server.
 
 ## Deployment
 
@@ -62,7 +48,6 @@ To enable GitHub Pages:
 ├── _layouts/
 │   └── default.html         # Bootstrap-based layout
 ├── index.md                 # Main page content
-├── Gemfile                  # Ruby dependencies
 ├── flake.nix                # Nix flake configuration
 └── .github/
     ├── workflows/

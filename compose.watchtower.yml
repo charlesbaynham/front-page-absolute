@@ -1,0 +1,24 @@
+# Use watchtower to automatically get updates to the main branch on github
+#
+# To use this plugin, add it to the COMPOSE_FILE .env setup
+
+services:
+  # Override the web service to get the container from the github
+  # container registry instead of the locally built version:
+  web:
+    image: ${WEB_IMAGE:-ghcr.io/charlesbaynham/front-page-absolute:latest}
+    # Remove build
+    build: !reset null
+    labels:
+      com.centurylinklabs.watchtower.scope: front-page-absolute
+
+  watchtower:
+    image: nickfedor/watchtower
+    restart: always
+    environment:
+      WATCHTOWER_SCOPE: front-page-absolute
+      WATCHTOWER_POLL_INTERVAL: 30
+    labels:
+      com.centurylinklabs.watchtower.scope: front-page-absolute
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro

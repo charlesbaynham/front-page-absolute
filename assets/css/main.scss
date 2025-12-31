@@ -1,0 +1,54 @@
+---
+---
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background-color: #252323;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.logo {
+    max-width: 4cm;
+}
+
+.project-logo {
+    max-width: 150px;
+    height: 150px;
+    object-fit: contain;
+}
+
+.project-card {
+    box-shadow:  0 1rem 3rem rgba(243, 241, 241, 0.5);
+    background-color: #111;
+    color: #fff;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+.footer {
+    opacity: 0.5;
+    font-size: 0.9rem;
+}
+
+.footer-logo {
+    height: 1.5rem;
+    width: auto;
+}
+
+.footer-text {
+    color: #ccc;
+}
