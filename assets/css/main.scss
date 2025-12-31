@@ -1,9 +1,21 @@
 ---
 ---
 
+html, body {
+    height: 100%;
+}
+
 body {
     background-color: #252323;
     color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .logo {
@@ -25,4 +37,18 @@ body {
     &:hover {
         transform: scale(1.05);
     }
+}
+
+.footer {
+    opacity: 0.5;
+    font-size: 0.9rem;
+}
+
+.footer-logo {
+    height: 1.5rem;
+    width: auto;
+}
+
+.footer-text {
+    color: #ccc;
 }
