@@ -1,40 +1,23 @@
 # Jekyll
+_compress_images_cache.yml
 _site/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
 
 # Bundler
-vendor/
 .bundle/
-
-# Ruby
-*.gem
-*.rbc
-.config
-coverage/
-InstalledFiles
-lib/bundler/man/
-pkg/
-rdoc/
-spec/reports/
-test/tmp/
-test/version_tmp/
-tmp/
+!.bundle/config
+vendor/
+.gems/
 
 # Nix
 result
 result-*
-.nix-*
-.direnv/
+.direnv
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Editor
-*.swp
-*.swo
-*~
-.vscode/
-.idea/
+# OS files
+# Bundler
+# Ignore all of .bundle except the config we want tracked
+# We will manually force git to add the config at .bundle/config
+.bundle/*

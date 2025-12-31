@@ -1,5 +1,5 @@
 {
-  description = "A Jekyll-based single-page website with Bootstrap";
+  description = "Jekyll wedding website development environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -10,107 +10,67 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
+
         # Ruby environment with Jekyll
-        rubyEnv = pkgs.ruby_3_2.withPackages (ps: with ps; [
-          jekyll
-        ]);
-        
-        # Build the site
-        site = pkgs.stdenv.mkDerivation {
-          name = "front-page-absolute";
-          src = ./.;
-          
-          buildInputs = [ rubyEnv pkgs.bundler ];
-          
-          buildPhase = ''
-            export HOME=$TMPDIR
-            export GEM_HOME=$TMPDIR/.gem
-            export PATH=$GEM_HOME/bin:$PATH
-            
-            # Install dependencies
-            bundle config set --local path 'vendor/bundle'
+        rubyEnv = pkgs.ruby_3_3.withPackages
+          (ps: with ps; [ jekyll jekyll-sitemap webrick ]);
+
+      in {
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [ rubyEnv bundler bundix git ];
+
+          shellHook = ''
+            # Install correct bundler version if needed
+            GEMFILE_BUNDLER_VERSION=$(grep -A 1 "BUNDLED WITH" Gemfile.lock 2>/dev/null | tail -n 1 | tr -d ' ')
+            echo "Installing Bundler $GEMFILE_BUNDLER_VERSION to match Gemfile.lock..."
+            gem install bundler:$GEMFILE_BUNDLER_VERSION --no-document >/dev/null 2>&1 || true
+
+            # Install dependencies if Gemfile.lock exists but gems aren't installed
+            echo "Installing Ruby dependencies..."
             bundle install
-            
-            # Build the site
-            bundle exec jekyll build
+            echo ""
+
+            # Create serve alias
+            alias serve='bundle exec jekyll serve'
+
+            echo "Jekyll wedding website development environment"
+            echo ""
+            echo "Available commands:"
+            echo "  nix run .#default  - Start local development server (alias for bundle exec jekyll serve)"
+            echo "  jekyll serve       - Start local development server"
+            echo "  jekyll build       - Build static site"
+            echo "  bundle install     - Install Ruby dependencies"
+            echo "  bundix            - Generate gemset.nix from Gemfile.lock"
+            echo ""
+            echo "Get started: nix run"
           '';
-          
+        };
+
+        # Serve app for running the development server
+        apps.serve = {
+          type = "app";
+          program = toString (pkgs.writeShellScript "serve" ''
+            ${rubyEnv}/bin/bundle exec jekyll serve
+          '');
+        };
+
+        apps.default = self.outputs.apps.${system}.serve;
+
+        # Default package builds the site
+        packages.default = pkgs.stdenv.mkDerivation {
+          name = "wedding-site";
+          src = ./.;
+
+          buildInputs = [ rubyEnv ];
+
+          buildPhase = ''
+            jekyll build
+          '';
+
           installPhase = ''
             mkdir -p $out
             cp -r _site/* $out/
           '';
         };
-        
-      in
-      {
-        packages = {
-          default = site;
-          website = site;
-        };
-        
-        apps = {
-          # Serve the site in development mode
-          serve = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "serve" ''
-              export HOME=$TMPDIR
-              export GEM_HOME=$HOME/.gem
-              export PATH=$GEM_HOME/bin:$PATH
-              
-              cd ${./.}
-              
-              # Install dependencies if needed
-              if [ ! -d "vendor/bundle" ]; then
-                ${pkgs.bundler}/bin/bundle config set --local path 'vendor/bundle'
-                ${pkgs.bundler}/bin/bundle install
-              fi
-              
-              # Serve the site
-              ${pkgs.bundler}/bin/bundle exec ${rubyEnv}/bin/jekyll serve --watch --livereload --host 0.0.0.0
-            '');
-          };
-          
-          # Build the site
-          build = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "build" ''
-              export HOME=$TMPDIR
-              export GEM_HOME=$HOME/.gem
-              export PATH=$GEM_HOME/bin:$PATH
-              
-              cd ${./.}
-              
-              # Install dependencies if needed
-              if [ ! -d "vendor/bundle" ]; then
-                ${pkgs.bundler}/bin/bundle config set --local path 'vendor/bundle'
-                ${pkgs.bundler}/bin/bundle install
-              fi
-              
-              # Build the site
-              ${pkgs.bundler}/bin/bundle exec ${rubyEnv}/bin/jekyll build
-              
-              echo "Site built successfully in _site/"
-            '');
-          };
-        };
-        
-        devShells.default = pkgs.mkShell {
-          buildInputs = [
-            rubyEnv
-            pkgs.bundler
-          ];
-          
-          shellHook = ''
-            export GEM_HOME=$PWD/.gem
-            export PATH=$GEM_HOME/bin:$PATH
-            
-            echo "Jekyll development environment"
-            echo "Commands:"
-            echo "  nix run .#build  - Build the site"
-            echo "  nix run .#serve  - Serve the site with live reload"
-          '';
-        };
-      }
-    );
+      });
 }
