@@ -21,3 +21,4 @@ result-*
 # Ignore all of .bundle except the config we want tracked
 # We will manually force git to add the config at .bundle/config
 .bundle/*
+.env
