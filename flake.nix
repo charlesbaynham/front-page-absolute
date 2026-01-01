@@ -17,7 +17,7 @@
 
       in {
         devShells.default = pkgs.mkShell {
-          buildInputs = [ rubyEnv pkgs.git ];
+          buildInputs = [ rubyEnv pkgs.git pkgs.imagemagick ];
 
           shellHook = ''
             echo "Jekyll website development environment"
@@ -47,7 +47,7 @@
           name = "houseabsolute-site";
           src = ./.;
 
-          buildInputs = [ rubyEnv ];
+          buildInputs = [ rubyEnv pkgs.imagemagick ];
 
           buildPhase = ''
             echo "Building Jekyll site..."
