@@ -2,7 +2,7 @@
 # Reduces image resolution to reasonable levels for web use
 # Requires imagemagick to be available in the build environment
 
-require 'shellwords'
+require 'fileutils'
 
 Jekyll::Hooks.register :site, :post_write do |site|
   puts "Optimizing images for web..."
@@ -14,14 +14,12 @@ Jekyll::Hooks.register :site, :post_write do |site|
   min_file_size = 10_000 # Skip files smaller than 10KB
   
   # Find all PNG and JPG images in the site output
-  image_files = Dir.glob(File.join(site.dest, '**', '*.{png,jpg,jpeg,PNG,JPG,JPEG}'))
+  image_files = Dir.glob(File.join(site.dest, '**', '*.{png,jpg,jpeg}'), File::FNM_CASEFOLD)
   
   image_files.each do |image_path|
-    # Skip if file doesn't exist or is too small to optimize
-    next unless File.exist?(image_path)
-    
-    original_size = File.size(image_path)
-    next if original_size < min_file_size
+    # Get original file size, skip if file doesn't exist or is too small
+    original_size = File.size?(image_path)
+    next unless original_size && original_size >= min_file_size
     
     # Use ImageMagick to resize and optimize
     # -resize: only resize if larger than max dimensions (use '>' flag)
@@ -42,9 +40,9 @@ Jekyll::Hooks.register :site, :post_write do |site|
     if system(*cmd)
       # Replace original with optimized version
       FileUtils.mv(temp_path, image_path)
-      new_size = File.size(image_path)
+      new_size = File.size?(image_path)
       
-      if new_size < original_size
+      if new_size && new_size < original_size
         saved = original_size - new_size
         saved_kb = (saved / 1024.0).round(1)
         percent = ((saved.to_f / original_size) * 100).round(1)
