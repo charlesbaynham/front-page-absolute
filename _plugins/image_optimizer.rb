@@ -2,6 +2,8 @@
 # Reduces image resolution to reasonable levels for web use
 # Requires imagemagick to be available in the build environment
 
+require 'shellwords'
+
 Jekyll::Hooks.register :site, :post_write do |site|
   puts "Optimizing images for web..."
   
@@ -9,6 +11,7 @@ Jekyll::Hooks.register :site, :post_write do |site|
   max_width = 1200
   max_height = 1200
   quality = 85
+  min_file_size = 10_000 # Skip files smaller than 10KB
   
   # Find all PNG and JPG images in the site output
   image_files = Dir.glob(File.join(site.dest, '**', '*.{png,jpg,jpeg,PNG,JPG,JPEG}'))
@@ -18,7 +21,7 @@ Jekyll::Hooks.register :site, :post_write do |site|
     next unless File.exist?(image_path)
     
     original_size = File.size(image_path)
-    next if original_size < 10_000 # Skip files smaller than 10KB
+    next if original_size < min_file_size
     
     # Use ImageMagick to resize and optimize
     # -resize: only resize if larger than max dimensions (use '>' flag)
@@ -26,9 +29,17 @@ Jekyll::Hooks.register :site, :post_write do |site|
     # -quality: set compression quality
     temp_path = "#{image_path}.tmp"
     
-    cmd = "convert \"#{image_path}\" -resize #{max_width}x#{max_height}\\> -strip -quality #{quality} \"#{temp_path}\""
+    # Properly escape shell arguments to prevent command injection
+    cmd = [
+      'convert',
+      image_path,
+      '-resize', "#{max_width}x#{max_height}>",
+      '-strip',
+      '-quality', quality.to_s,
+      temp_path
+    ]
     
-    if system(cmd)
+    if system(*cmd)
       # Replace original with optimized version
       FileUtils.mv(temp_path, image_path)
       new_size = File.size(image_path)
